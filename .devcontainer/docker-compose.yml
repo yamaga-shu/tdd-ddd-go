@@ -1,0 +1,11 @@
+name: tdd-ddd-go
+services:
+  tdd-ddd-go:
+    container_name: tdd-ddd-go
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - ../:/workspace/tdd-ddd-go
+    stdin_open: true
+    tty: true
