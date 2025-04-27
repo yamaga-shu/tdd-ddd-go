@@ -7,6 +7,11 @@ func TestLength(t *testing.T) {
 	if err == nil {
 		t.Error("expected error for firstname shorter than 3 characters, got nil")
 	}
+
+	_, err = NewFirstName("shu")
+	if err != nil {
+		t.Error("expected no error for Longer than 3 characters")
+	}
 }
 
 func TestValidChar(t *testing.T) {
