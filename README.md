@@ -2,6 +2,11 @@
 
 This project is a playground for TDD (Test-Driven Development) and DDD (Domain-Driven Design) with Golang.
 
+## Sample Project
+Small Membership Library System
+
+Domain Expert's role is played by ChatGPT.
+
 ## References
 
 This project references the following books:
