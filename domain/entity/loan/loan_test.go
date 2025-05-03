@@ -28,28 +28,56 @@ func initLoan() *Loan {
 func TestReturnDate(t *testing.T) {
 	// 2025/05/08 に返却（貸出日の後）
 	loan := initLoan()
-	returnDate := time.Date(2025, time.May, 8, 0, 0, 0, 0, time.UTC)
-	if err := loan.Return(returnDate); err != nil {
+	validDate := time.Date(2025, time.May, 8, 0, 0, 0, 0, time.UTC)
+	if err := loan.Return(validDate); err != nil {
 		t.Errorf("Expected successful return, but got error: %v", err)
 	}
 
 	// 2025/04/10 に返却（貸出日の前）
 	loan = initLoan()
-	returnDate = time.Date(2025, time.April, 10, 0, 0, 0, 0, time.UTC)
-	if err := loan.Return(returnDate); err == nil {
+	invalidDate := time.Date(2025, time.April, 10, 0, 0, 0, 0, time.UTC)
+	if err := loan.Return(invalidDate); err == nil {
 		t.Errorf("Expected error for return date before loan date, but got none")
 	}
 }
 
-func TestReturnSideEffect(t *testing.T) {
+// TestReturnSideEffectDate verifies the side effects of the Return method on the returnDate field.
+// It checks if the returnDate is correctly updated after a valid return and ensures that an error
+// is returned when attempting to return the loan a second time.
+func TestReturnSideEffectDate(t *testing.T) {
 	loan := initLoan()
+	validDate := time.Date(2025, time.May, 8, 0, 0, 0, 0, time.UTC)
 
-	// first Return
-	loan.Return(time.Now())
+	// Test the first Return call
+	loan.Return(validDate)
 
-	// duplicated Return
-	err := loan.Return(time.Now())
+	if loan.returnDate != validDate {
+		t.Errorf("Expected returnDate was updated")
+	}
+
+	// Test duplicated Return call
+	err := loan.Return(validDate)
 	if err == nil {
 		t.Errorf("Expected error for duplicated Return call, but got none")
+	}
+}
+
+// TestReturnSideEffectStatus verifies the side effects of the Return method on the status field.
+// It checks the initial status of the loan, ensures the status is updated to 'returned' after a valid
+// return, and verifies that the status is not incorrectly set.
+func TestReturnSideEffectStatus(t *testing.T) {
+	loan := initLoan()
+	validDate := time.Date(2025, time.May, 8, 0, 0, 0, 0, time.UTC)
+
+	// Check initial status
+	if loan.status != onLoan {
+		t.Errorf("Expected status is onLoan")
+	}
+
+	// Test status update after Return
+	loan.Return(validDate)
+
+	if loan.status != returned {
+		t.Errorf("Expected status is updated")
 	}
 }
