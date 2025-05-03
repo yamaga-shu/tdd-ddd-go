@@ -32,12 +32,20 @@ func New(loanId, memberId, bookInventoryId uuid.UUID, now time.Time) *Loan {
 }
 
 // Return updates the loan's return date and status to indicate the book has been returned
-func (l *Loan) Return(date time.Time) {
+func (l *Loan) Return(now time.Time) error {
+	if l.loanDate.After(now) {
+		return errors.New("returnDate must be after loanDate")
+	}
+	if l.status == returned {
+		return errors.New("this loan has been already returned")
+	}
 	// update returnDate
-	l.returnDate = date
+	l.returnDate = now
 
 	// update loanStatus
 	l.status = returned
+
+	return nil
 }
 
 // IsOverdue checks if the loan is overdue by comparing the current time with the due date.
