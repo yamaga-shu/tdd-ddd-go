@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/yamaga-shu/tdd-ddd-go/domain/entity/member"
 )
 
 func initLoan() *Loan {
@@ -20,6 +21,7 @@ func initLoan() *Loan {
 		memberId,
 		bookInventoryId,
 		loanDate,
+		member.MRepository{},
 	)
 }
 
@@ -78,6 +80,6 @@ func TestReturnSideEffectStatus(t *testing.T) {
 	loan.Return(validDate)
 
 	if loan.status != returned {
-		t.Errorf("Expected status is updated")
+		t.Errorf("Expected status is returned")
 	}
 }
