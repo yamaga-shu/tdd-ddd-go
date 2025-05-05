@@ -8,6 +8,22 @@ import (
 	"github.com/yamaga-shu/tdd-ddd-go/domain/entity/member"
 )
 
+// tMemberRepository is Mocked MemberRepository for this test.
+type tMemberRepository struct{}
+
+func (tmr tMemberRepository) GetMemberById(memberId uuid.UUID) (*member.Member, error) {
+	mem := member.New(memberId, "Mocked Name")
+
+	return mem, nil
+}
+
+// tLoanRepository is Mocked LoanRepository for this test.
+type tLoanRepository struct{}
+
+func (tlr tLoanRepository) Create(l *Loan) error {
+	return nil
+}
+
 func initLoan() *Loan {
 	loanId, _ := uuid.NewV7()
 	memberId, _ := uuid.NewV7()
@@ -21,7 +37,8 @@ func initLoan() *Loan {
 		memberId,
 		bookInventoryId,
 		loanDate,
-		member.MRepository{},
+		tLoanRepository{},
+		tMemberRepository{},
 	)
 }
 
