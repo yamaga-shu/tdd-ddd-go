@@ -33,8 +33,10 @@ func New(loanId, memberId, bookInventoryId uuid.UUID, now time.Time, loanReposit
 		bookInventoryId: bookInventoryId,
 		loanDate:        now,
 		dueDate:         now.AddDate(0, 0, 14),
-		status:          onLoan,
 		extended:        false,
+		status:          onLoan,
+
+		// 依存性の注入
 		repositories: struct {
 			loanRepository   IRepository
 			memberRepository member.IRepository
