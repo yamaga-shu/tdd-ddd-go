@@ -21,5 +21,10 @@ func (ll *loanLimit) Increment() {
 }
 
 func (ll *loanLimit) Decrement() {
+	if ll.current <= 0 {
+		ll.current = 0
+		return
+	}
+
 	ll.current--
 }
