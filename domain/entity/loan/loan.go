@@ -12,12 +12,12 @@ import (
 type Loan struct {
 	loanId           uuid.UUID          // 貸出のID
 	memberId         uuid.UUID          // 借りた会員のID
-	bookInventoryId  uuid.UUID          // 借りられた本の蔵書ID
+	bookInventoryId  uuid.UUID          // 借りられた蔵書のID
 	loanDate         time.Time          // 貸出日
 	dueDate          time.Time          // 返却予定日(貸出日 + 14日)
-	returnDate       time.Time          // 返却された日
+	returnDate       time.Time          // 実際に返却された日
+	extended         bool               // 延長の有無(延長は1度のみ)
 	status           LoanStatus         // 現在の貸出状態
-	extended         bool               // 延長は1度のみ
 	memberRepository member.IRepository // 会員リポジトリ
 }
 
@@ -59,14 +59,8 @@ func (l *Loan) Return(now time.Time) error {
 	return nil
 }
 
-// IsOverdue checks if the loan is overdue by comparing the current time with the due date.
-// It returns true if the loan is still on loan and the due date has passed.
-func (l *Loan) IsOverdue(now time.Time) bool {
-	return l.status == onLoan && l.dueDate.Before(now)
-}
-
-// ExtendDueDate extends the due date of the loan by 7 days if it hasn't been extended before.
-func (l *Loan) ExtendDueDate() error {
+// Extend extends the due date of the loan by 7 days if it hasn't been extended before.
+func (l *Loan) Extend() error {
 	if l.extended {
 		return errors.New("dueDate has been already extended")
 	}
