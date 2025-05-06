@@ -5,22 +5,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/yamaga-shu/tdd-ddd-go/domain/entity/member"
 )
-
-// tMemberRepository is Mocked MemberRepository for this test.
-type tMemberRepository struct{}
-
-func (tmr tMemberRepository) GetMemberById(memberId uuid.UUID) (*member.Member, error) {
-	mem := member.New(memberId, "Mocked Name")
-
-	return mem, nil
-}
 
 // tLoanRepository is Mocked LoanRepository for this test.
 type tLoanRepository struct{}
 
-func (tlr tLoanRepository) Create(l *Loan) error {
+func (tlr tLoanRepository) Store(l *Loan) error {
 	return nil
 }
 
@@ -37,15 +27,15 @@ func initLoan() *Loan {
 		memberId,
 		bookInventoryId,
 		loanDate,
-		tLoanRepository{},
-		tMemberRepository{},
 	)
 }
 
 func TestRegister(t *testing.T) {
 	loan := initLoan()
+	loanService := Service{loanRepository: tLoanRepository{}}
 
-	err := loan.Register()
+	err := loanService.Register(loan)
+
 	if err != nil {
 		t.Errorf("Expected Register proceed successfully, but got error %v", err)
 	}
@@ -119,9 +109,18 @@ func TestExtend(t *testing.T) {
 	}
 
 	// extend dueDate
-	loan.Extend()
+	err := loan.Extend()
 
 	if !loan.dueDate.Equal(time.Date(2025, time.May, 22, 0, 0, 0, 0, time.UTC)) {
 		t.Errorf("Expected dueDate is 2025-05-22 after Extend(), but got %s", loan.dueDate.Format("2006-01-02"))
+	}
+	if err != nil {
+		t.Errorf("Expected first Extend() would not return err, but got %v", err)
+	}
+
+	// extend again
+	err = loan.Extend()
+	if err == nil {
+		t.Errorf("Expected multiple Extend() would return err, but got %v", err)
 	}
 }
